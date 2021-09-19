@@ -1,0 +1,14 @@
+# Ignore Vs code configs
+.vscode
+
+# Ignore project build
+target/**
+
+# Ignore Classpath
+.classpath
+
+# Ignore settings
+.settings
+
+# Ignore project
+.project
