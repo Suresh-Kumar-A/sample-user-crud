@@ -1,5 +1,9 @@
 package com.gmail.creativegeeksuresh.crud.user.controller;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.gmail.creativegeeksuresh.crud.user.dto.CustomErrorResponse;
 import com.gmail.creativegeeksuresh.crud.user.dto.UserDto;
 import com.gmail.creativegeeksuresh.crud.user.exception.InvalidCredentialsException;
@@ -7,6 +11,7 @@ import com.gmail.creativegeeksuresh.crud.user.exception.InvalidUserException;
 import com.gmail.creativegeeksuresh.crud.user.exception.UserAlreadyExistsException;
 import com.gmail.creativegeeksuresh.crud.user.model.User;
 import com.gmail.creativegeeksuresh.crud.user.service.UserService;
+import com.gmail.creativegeeksuresh.crud.user.service.util.CustomJwtService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +31,9 @@ public class ApiController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    CustomJwtService customJwtService;
 
     @PostMapping(value = "/create-account")
     public ResponseEntity<?> createUserAccount(@RequestBody UserDto request) {
@@ -146,6 +154,34 @@ public class ApiController {
             return new ResponseEntity<>(
                     new CustomErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getLocalizedMessage(), ""),
                     HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+    @PostMapping(value = "/create-jwt-token")
+    public ResponseEntity<Map<String, Object>> createSignedJwtTokenRequest(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            response.put("token", customJwtService.generateSignedJwtToken(request));
+            response.put("createdAt", new Date().toString());
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("errorInfo", e.getLocalizedMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(value = "/verify-jwt-token")
+    public ResponseEntity<Map<String, Object>> verifyAndParseJwtToken(@RequestBody Map<String, Object> request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            response = customJwtService.verifyJwtTokenAndGetValue((String) request.get("token"));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("errorInfo", e.getLocalizedMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
 
