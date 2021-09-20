@@ -1,21 +1,13 @@
-# Getting Started
+# OpenSSL RSA Key pair generation
 
-### Reference Documentation
-For further reference, please consider the following sections:
+## Generate RSA Private Key (2048 bits)
++) openssl genrsa -out jwt_privatekey.pem 2048
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.5.4/maven-plugin/reference/html/)
-* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.5.4/maven-plugin/reference/html/#build-image)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/2.5.4/reference/htmlsingle/#using-boot-devtools)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/2.5.4/reference/htmlsingle/#boot-features-developing-web-applications)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/2.5.4/reference/htmlsingle/#boot-features-jpa-and-spring-data)
+## Extract Public Key from Private Key in .pem format | (Optional step)
++) openssl req -new -x509 -key jwt_privatekey.pem -out jwt_publickey509.pem -subj '/CN=JWT'
 
-### Guides
-The following guides illustrate how to use some features concretely:
+## Extract Public Key from Private Key in .der format
++) openssl rsa -outform der -in jwt_privatekey.pem -out jwt_publickey.der -pubout
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
-* [Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-
+## Convert RSA Private key format (.pem to .der)
++) openssl pkcs8 -topk8 -inform PEM -outform DER -in jwt_privatekey.pem -out jwt_privatekey.der -nocrypt
