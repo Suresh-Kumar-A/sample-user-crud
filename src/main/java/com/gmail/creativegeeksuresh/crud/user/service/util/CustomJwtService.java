@@ -2,7 +2,6 @@ package com.gmail.creativegeeksuresh.crud.user.service.util;
 
 import java.io.DataInputStream;
 import java.io.File;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyFactory;
@@ -21,7 +20,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator.Builder;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import org.springframework.core.io.ClassPathResource;
@@ -34,8 +32,6 @@ public class CustomJwtService {
     private RSAPublicKey RSA_PUBLIC_KEY;
     private RSAPrivateKey RSA_PRIVATE_KEY;
 
-    String issuer="Suresh-Kumar-A";
-
     static {
         JWT_HEADER = new HashMap<>();
         JWT_HEADER.put("alg", "RS256");
@@ -47,8 +43,9 @@ public class CustomJwtService {
         RSA_PRIVATE_KEY = getPrivateKey();
         // Pass Null to Public Key if you don't have a public key (or) don't need to get
         // the public key from user
+        // Note: Public Key are not needed for signing
         Algorithm algorithm = Algorithm.RSA384(null, RSA_PRIVATE_KEY);
-        Builder builder = JWT.create().withHeader(JWT_HEADER).withIssuer(issuer);
+        Builder builder = JWT.create().withHeader(JWT_HEADER).withIssuer(AppConstants.JWT_ISSUER);
 
         jwtPayloadData.forEach((key, value) -> {
 
@@ -78,10 +75,11 @@ public class CustomJwtService {
     public Map<String, Object> verifyJwtTokenAndGetValue(String jwtToken) throws Exception {
         RSA_PUBLIC_KEY = getPublicKey();
         // Pass Null to Private Key if you don't have a private key (or) don't need to
-        // get
-        // the private key from user
+        // get the private key from user
+        // Note: Private Key are not needed for verifying
         Algorithm algorithm = Algorithm.RSA384(RSA_PUBLIC_KEY, null);
-        JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build(); // Reusable verifier instance
+        JWTVerifier verifier = JWT.require(algorithm).withIssuer(AppConstants.JWT_ISSUER).build(); // Reusable verifier
+                                                                                                   // instance
         DecodedJWT jwt = verifier.verify(jwtToken);
         Map<String, Object> jwtPayloadData = new HashMap<>();
         // Return JWT Payload / Claims
@@ -90,21 +88,21 @@ public class CustomJwtService {
 
             // Class<?> valueClassType = value.getClass();
             // if (String.class.equals(valueClassType)) {
-            //     jwtPayloadData.put(key, value.asString());
+            // jwtPayloadData.put(key, value.asString());
             // } else if (Boolean.class.equals(valueClassType)) {
-            //     jwtPayloadData.put(key, value.asBoolean());
+            // jwtPayloadData.put(key, value.asBoolean());
             // } else if (Integer.class.equals(valueClassType)) {
-            //     jwtPayloadData.put(key, value.asInt());
+            // jwtPayloadData.put(key, value.asInt());
             // } else if (Date.class.equals(valueClassType)) {
-            //     jwtPayloadData.put(key, value.asDate());
+            // jwtPayloadData.put(key, value.asDate());
             // } else if (Double.class.equals(valueClassType)) {
-            //     jwtPayloadData.put(key, value.asDouble());
+            // jwtPayloadData.put(key, value.asDouble());
             // } else if (List.class.equals(valueClassType)) {
-            //     jwtPayloadData.put(key, value.asList(Object.class));
+            // jwtPayloadData.put(key, value.asList(Object.class));
             // } else if (Map.class.equals(valueClassType)) {
-            //     jwtPayloadData.put(key, value.asMap());
+            // jwtPayloadData.put(key, value.asMap());
             // } else if (Long.class.equals(valueClassType)) {
-            //     jwtPayloadData.put(key, value.asLong());
+            // jwtPayloadData.put(key, value.asLong());
             // }
         });
 
@@ -112,7 +110,6 @@ public class CustomJwtService {
     }
 
     private static RSAPrivateKey getPrivateKey() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-
         File file = new ClassPathResource(AppConstants.PRIVATE_KEY_PATH).getFile();
         FileInputStream fis = new FileInputStream(file);
         DataInputStream dis = new DataInputStream(fis);
@@ -122,12 +119,10 @@ public class CustomJwtService {
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         RSAPrivateKey privateKey = (RSAPrivateKey) keyFactory.generatePrivate(spec);
-
         return privateKey;
     }
 
     private static RSAPublicKey getPublicKey() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-
         File file = new ClassPathResource(AppConstants.PUBLIC_KEY_PATH).getFile();
         FileInputStream fis = new FileInputStream(file);
         DataInputStream dis = new DataInputStream(fis);
@@ -139,18 +134,5 @@ public class CustomJwtService {
         RSAPublicKey publicKey = (RSAPublicKey) keyFactory.generatePublic(spec);
         return publicKey;
     }
-
-    // public void checkToken(String data) {
-    //     try {
-    //         RSA_PRIVATE_KEY = (RSAPrivateKey) getPrivateKey();
-    //         RSA_PUBLIC_KEY = (RSAPublicKey) getPublicKey();
-    //         Algorithm algorithm = Algorithm.RSA384(RSA_PUBLIC_KEY, RSA_PRIVATE_KEY);
-    //         JWTVerifier verifier = JWT.require(algorithm).withIssuer("SuKU").build(); // Reusable verifier instance
-    //         DecodedJWT jwt = verifier.verify(data);
-    //         System.out.println(jwt.getIssuer());
-    //     } catch (Exception e) {
-    //         System.err.println(e.getLocalizedMessage());
-    //     }
-    // }
 
 }

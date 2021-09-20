@@ -12,10 +12,11 @@ public class AppConstants {
         public static final Set<String> ROLE_SET = Collections
                         .unmodifiableSet(new HashSet<>(Arrays.asList(ADMIN_ROLE_STRING, USER_ROLE_STRING)));
 
-// public static final String PRIVATE_KEY_PATH="jwt_privatekey.der";
-// public static final String PUBLIC_KEY_PATH="jwt_publickey.der";
+        // public static final String PRIVATE_KEY_PATH="jwt_privatekey.der";
+        // public static final String PUBLIC_KEY_PATH="jwt_publickey.der";
 
-public static final String PRIVATE_KEY_PATH="security/keys/jwt_privatekey.der";
-public static final String PUBLIC_KEY_PATH="security/keys/jwt_publickey.der";
+        public static final String PRIVATE_KEY_PATH = "security/keys/jwt_privatekey.der";
+        public static final String PUBLIC_KEY_PATH = "security/keys/jwt_publickey.der";
 
+        public static final String JWT_ISSUER = "Suresh-Kumar-A";
 }
