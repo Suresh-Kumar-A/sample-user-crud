@@ -40,7 +40,7 @@ public class CustomJwtService {
 
     @SuppressWarnings("unchecked")
     public String generateSignedJwtToken(Map<String, Object> jwtPayloadData) throws Exception {
-        RSA_PRIVATE_KEY = getPrivateKey();
+        RSA_PRIVATE_KEY = CustomJwtService.getPrivateKey();
         // Pass Null to Public Key if you don't have a public key (or) don't need to get
         // the public key from user
         // Note: Public Key are not needed for signing
@@ -73,13 +73,12 @@ public class CustomJwtService {
     }
 
     public Map<String, Object> verifyJwtTokenAndGetValue(String jwtToken) throws Exception {
-        RSA_PUBLIC_KEY = getPublicKey();
+        RSA_PUBLIC_KEY = CustomJwtService.getPublicKey();
         // Pass Null to Private Key if you don't have a private key (or) don't need to
         // get the private key from user
         // Note: Private Key are not needed for verifying
         Algorithm algorithm = Algorithm.RSA384(RSA_PUBLIC_KEY, null);
-        JWTVerifier verifier = JWT.require(algorithm).withIssuer(AppConstants.JWT_ISSUER).build(); // Reusable verifier
-                                                                                                   // instance
+        JWTVerifier verifier = JWT.require(algorithm).withIssuer(AppConstants.JWT_ISSUER).build();
         DecodedJWT jwt = verifier.verify(jwtToken);
         Map<String, Object> jwtPayloadData = new HashMap<>();
         // Return JWT Payload / Claims
